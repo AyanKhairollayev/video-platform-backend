@@ -3,13 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Player</title>
+    <title>Upload Video</title>
 </head>
 <body>
-<h1>Watch Video</h1>
-<video width="640" height="360" controls>
-    <source src="/videos/stream/{{id}}" type="video/mp4">
-    Your browser does not support the video tag.
-</video>
+<h1>Upload a Video</h1>
+
+<form id="uploadForm" action="/videos/upload" method="POST" enctype="multipart/form-data">
+    <input type="file" name="file" id="fileInput" accept="video/*" required>
+    <button type="submit">Upload Video</button>
+</form>
+
 </body>
 </html>
