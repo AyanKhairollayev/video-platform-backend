@@ -3,10 +3,12 @@ package kz.khairollayev.videoplatformbackend.controller;
 import kz.khairollayev.videoplatformbackend.service.VideoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-@RestController
+@Controller
 @RequestMapping("/videos")
 @RequiredArgsConstructor
 public class VideoController {
@@ -22,5 +24,11 @@ public class VideoController {
                                               @RequestHeader(value = "Range", required = false) String rangeHeader) {
 
         return videoService.streamVideo(id, rangeHeader);
+    }
+
+    @GetMapping("/watch")
+    public String watchVideo(@RequestParam Long id, Model model) {
+        model.addAttribute("id", id);
+        return "video";
     }
 }
