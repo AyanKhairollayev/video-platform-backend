@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video List</title>
+</head>
+<body>
+<h1>Video List</h1>
+
+<div>
+    {{#list}}
+        <div>
+            <a href="/videos/list">
+            <img src="{{previewPhoto}}" alt="Preview for {{name}}" width="200">
+            <p>{{name}}</p>
+            </a>
+        </div>
+    {{/list}}
+</div>
+
+</body>
+</html>

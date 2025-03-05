@@ -15,5 +15,7 @@ public class Video {
     private String name;
     @Lob
     private byte[] data;
+    @Lob
+    private byte[] previewPhoto;
     private String contentType;
 }

@@ -1,5 +1,7 @@
 package kz.khairollayev.videoplatformbackend.service;
 
+import kz.khairollayev.videoplatformbackend.dto.VideoUploadDto;
+import kz.khairollayev.videoplatformbackend.dto.VideoPreviewDto;
 import kz.khairollayev.videoplatformbackend.model.Video;
 import kz.khairollayev.videoplatformbackend.repository.VideoRepository;
 import lombok.RequiredArgsConstructor;
@@ -8,11 +10,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -21,17 +24,38 @@ public class VideoServiceImpl implements VideoService {
     private final VideoRepository videoRepository;
 
     @Override
-    public String uploadVideo(MultipartFile file) {
+    public String uploadVideo(VideoUploadDto videoUploadDto) {
         try {
             Video video = new Video();
-            video.setName(file.getOriginalFilename());
-            video.setData(file.getBytes());
-            video.setContentType(file.getContentType());
+            video.setName(videoUploadDto.getName());
+            video.setData(videoUploadDto.getMultipartFile().getBytes());
+            video.setContentType(videoUploadDto.getMultipartFile().getContentType());
+            video.setPreviewPhoto(videoUploadDto.getPreviewPhoto().getBytes());
             videoRepository.save(video);
             return "Uploaded successfully! Video ID: " + video.getId();
         } catch (IOException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
+    }
+
+    @Override
+    public ResponseEntity<List<VideoPreviewDto>> getList() {
+        List<Video> videoList = videoRepository.findAll();
+        List<VideoPreviewDto> videoPreviewDtoList = new ArrayList<>();
+
+        for (Video video : videoList) {
+            VideoPreviewDto videoPreviewDto = new VideoPreviewDto();
+            videoPreviewDto.setId(video.getId());
+            videoPreviewDto.setName(video.getName());
+            videoPreviewDto.setPreviewPhoto(video.getPreviewPhoto());
+
+            videoPreviewDtoList.add(videoPreviewDto);
+        }
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.IMAGE_JPEG);
+
+        return ResponseEntity.ok().body(videoPreviewDtoList);
     }
 
     @Override
