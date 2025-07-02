@@ -28,8 +28,8 @@ public class VideoServiceImpl implements VideoService {
         try {
             Video video = new Video();
             video.setName(videoUploadDto.getName());
-            video.setData(videoUploadDto.getMultipartFile().getBytes());
-            video.setContentType(videoUploadDto.getMultipartFile().getContentType());
+            video.setData(videoUploadDto.getFile().getBytes());
+            video.setContentType(videoUploadDto.getFile().getContentType());
             video.setPreviewPhoto(videoUploadDto.getPreviewPhoto().getBytes());
             videoRepository.save(video);
             return "Uploaded successfully! Video ID: " + video.getId();
@@ -39,23 +39,26 @@ public class VideoServiceImpl implements VideoService {
     }
 
     @Override
-    public ResponseEntity<List<VideoPreviewDto>> getList() {
+    public List<VideoPreviewDto> getList() {
         List<Video> videoList = videoRepository.findAll();
         List<VideoPreviewDto> videoPreviewDtoList = new ArrayList<>();
 
         for (Video video : videoList) {
-            VideoPreviewDto videoPreviewDto = new VideoPreviewDto();
-            videoPreviewDto.setId(video.getId());
-            videoPreviewDto.setName(video.getName());
-            videoPreviewDto.setPreviewPhoto(video.getPreviewPhoto());
-
-            videoPreviewDtoList.add(videoPreviewDto);
+            VideoPreviewDto dto = new VideoPreviewDto();
+            dto.setId(video.getId());
+            dto.setName(video.getName());
+            dto.setPreviewPhoto(("/videos/preview/" + video.getId()));
+            videoPreviewDtoList.add(dto);
         }
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.IMAGE_JPEG);
+        return videoPreviewDtoList.isEmpty() ? null : videoPreviewDtoList;
+    }
 
-        return ResponseEntity.ok().body(videoPreviewDtoList);
+    @Override
+    public byte[] getPreviewPhotoById(Long id) {
+        Video video = videoRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        return video.getPreviewPhoto();
     }
 
     @Override

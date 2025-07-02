@@ -10,5 +10,6 @@ import java.util.List;
 public interface VideoService {
     String uploadVideo(VideoUploadDto videoUploadDto);
     ResponseEntity<byte[]> streamVideo(Long id, String rangeHeader);
-    ResponseEntity<List<VideoPreviewDto>> getList();
+    List<VideoPreviewDto> getList();
+    byte[] getPreviewPhotoById(Long id);
 }

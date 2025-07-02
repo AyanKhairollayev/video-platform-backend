@@ -7,6 +7,6 @@ import lombok.Setter;
 @Setter
 public class VideoPreviewDto {
     private Long id;
-    private byte[] previewPhoto;
+    private String previewPhoto;
     private String name;
 }

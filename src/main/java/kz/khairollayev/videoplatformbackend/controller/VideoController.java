@@ -1,15 +1,15 @@
 package kz.khairollayev.videoplatformbackend.controller;
 
-import kz.khairollayev.videoplatformbackend.dto.VideoPreviewDto;
 import kz.khairollayev.videoplatformbackend.dto.VideoUploadDto;
 import kz.khairollayev.videoplatformbackend.service.VideoService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Controller
 @RequestMapping("/videos")
@@ -20,6 +20,7 @@ public class VideoController {
     @PostMapping("/upload")
     public ResponseEntity<String> uploadVideo(VideoUploadDto videoUploadDto) {
         return ResponseEntity.ok(videoService.uploadVideo(videoUploadDto));
+
     }
 
     @GetMapping(value = "/stream/{id}")
@@ -30,19 +31,17 @@ public class VideoController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<List<VideoPreviewDto>> getVideoList() {
-        return videoService.getList();
-    }
-
-    @GetMapping("/watch")
-    public String watchVideo(@RequestParam Long id, Model model) {
-        model.addAttribute("id", id);
-        return "video";
-    }
-
-    @GetMapping("/get-list")
     public String getVideoList(Model model) {
-        model.addAttribute("list", videoService.getList().getBody());
+        model.addAttribute("list", videoService.getList());
         return "videoList";
+    }
+
+    @GetMapping("/preview/{id}")
+    public ResponseEntity<byte[]> getPreviewPhoto(@PathVariable Long id) {
+        byte[] image = videoService.getPreviewPhotoById(id);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.IMAGE_JPEG);
+        return new ResponseEntity<>(image, headers, HttpStatus.OK);
     }
 }

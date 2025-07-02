@@ -7,7 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Getter
 @Setter
 public class VideoUploadDto {
-    private MultipartFile multipartFile;
+    private MultipartFile file;
     private String name;
     private MultipartFile previewPhoto;
 }
