@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/videos")
+@RequestMapping("/videos")
 @RequiredArgsConstructor
 public class VideoController {
     private final VideoService videoService;
@@ -35,7 +35,7 @@ public class VideoController {
         return videoService.streamVideo(id, headers);
     }
 
-    @GetMapping()
+    @GetMapping("/list")
     public ResponseEntity<List<VideoPreviewDto>> getVideoList() {
         return ResponseEntity.ok(videoService.getList());
     }
