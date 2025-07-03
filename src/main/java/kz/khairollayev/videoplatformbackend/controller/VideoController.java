@@ -8,13 +8,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/videos")
 @RequiredArgsConstructor
 public class VideoController {
@@ -26,6 +24,12 @@ public class VideoController {
 
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteVideo(@PathVariable Long id) {
+        videoService.deleteVideo(id);
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping(value = "/stream/{id}")
     public ResponseEntity<byte[]> streamVideo(@PathVariable Long id,
                                               @RequestHeader(value = "Range", required = false) String rangeHeader) {
@@ -34,7 +38,7 @@ public class VideoController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<List<VideoPreviewDto>> getVideoList(Model model) {
+    public ResponseEntity<List<VideoPreviewDto>> getVideoList() {
         return ResponseEntity.ok(videoService.getList());
     }
 

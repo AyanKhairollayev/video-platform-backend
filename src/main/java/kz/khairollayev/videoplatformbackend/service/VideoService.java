@@ -12,4 +12,5 @@ public interface VideoService {
     ResponseEntity<byte[]> streamVideo(Long id, String rangeHeader);
     List<VideoPreviewDto> getList();
     byte[] getPreviewPhotoById(Long id);
+    void deleteVideo(Long id);
 }

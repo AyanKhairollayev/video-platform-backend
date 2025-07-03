@@ -24,6 +24,11 @@ public class VideoServiceImpl implements VideoService {
     private final VideoRepository videoRepository;
 
     @Override
+    public void deleteVideo(Long id) {
+        videoRepository.deleteById(id);
+    }
+
+    @Override
     public String uploadVideo(VideoUploadDto videoUploadDto) {
         try {
             Video video = new Video();
