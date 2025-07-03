@@ -10,7 +10,7 @@ public class WebCfg implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry
                 .addMapping("/**")
-                .allowedOrigins("http://localhost:5173")
+                .allowedOrigins("https://video-platform-frontend-production.up.railway.app/")
                 .allowedMethods("GET","POST","PUT","DELETE","OPTIONS")
                 .allowedHeaders("*");
     }
