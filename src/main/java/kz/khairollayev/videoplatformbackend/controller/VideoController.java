@@ -4,10 +4,8 @@ import kz.khairollayev.videoplatformbackend.dto.VideoPreviewDto;
 import kz.khairollayev.videoplatformbackend.dto.VideoUploadDto;
 import kz.khairollayev.videoplatformbackend.service.VideoService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.core.io.support.ResourceRegion;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,11 +28,11 @@ public class VideoController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping(value = "/stream/{id}")
-    public ResponseEntity<byte[]> streamVideo(@PathVariable Long id,
-                                              @RequestHeader(value = "Range", required = false) String rangeHeader) {
-
-        return videoService.streamVideo(id, rangeHeader);
+    @GetMapping("/stream/{id}")
+    public ResponseEntity<ResourceRegion> streamVideoFromDb(
+            @PathVariable Long id,
+            @RequestHeader HttpHeaders headers) {
+        return videoService.streamVideo(id, headers);
     }
 
     @GetMapping("/list")

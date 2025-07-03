@@ -5,11 +5,11 @@ import kz.khairollayev.videoplatformbackend.dto.VideoPreviewDto;
 import kz.khairollayev.videoplatformbackend.model.Video;
 import kz.khairollayev.videoplatformbackend.repository.VideoRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.support.ResourceRegion;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
@@ -21,6 +21,8 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class VideoServiceImpl implements VideoService {
+    private static final long CHUNK_SIZE = 1024 * 1024;
+
     private final VideoRepository videoRepository;
 
     @Override
@@ -67,37 +69,41 @@ public class VideoServiceImpl implements VideoService {
     }
 
     @Override
-    public ResponseEntity<byte[]> streamVideo(Long id, String rangeHeader) {
-        Optional<Video> videoOptional = videoRepository.findById(id);
+    public ResponseEntity<ResourceRegion> streamVideo(Long id, HttpHeaders headers) {
+        Video video = videoRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        if (!videoOptional.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        byte[] allBytes = video.getData();
+        ByteArrayResource resource = new ByteArrayResource(allBytes);
+        long contentLength = allBytes.length;
+
+        ResourceRegion region = extractRegion(headers, resource, contentLength);
+
+        MediaType contentType = MediaTypeFactory
+                .getMediaType(video.getName())
+                .orElse(MediaType.APPLICATION_OCTET_STREAM);
+
+        HttpStatus status = (headers.getRange().isEmpty())
+                ? HttpStatus.OK
+                : HttpStatus.PARTIAL_CONTENT;
+
+        return ResponseEntity.status(status)
+                .contentType(contentType)
+                .body(region);
+    }
+
+    private ResourceRegion extractRegion(HttpHeaders headers,
+                                         ByteArrayResource resource,
+                                         long contentLength) {
+        List<HttpRange> ranges = headers.getRange();
+        if (ranges.isEmpty()) {
+            long length = Math.min(CHUNK_SIZE, contentLength);
+            return new ResourceRegion(resource, 0, length);
         }
-
-        Video video = videoOptional.get();
-        byte[] videoData = video.getData();
-        long videoLength = videoData.length;
-
-        String mimeType = (video.getContentType() != null) ? video.getContentType() : "video/mp4";
-
-        if (rangeHeader == null) {
-            return ResponseEntity.ok()
-                    .contentType(MediaType.valueOf(mimeType))
-                    .body(videoData);
-        }
-
-        String[] ranges = rangeHeader.replace("bytes=", "").split("-");
-        long start = Long.parseLong(ranges[0]);
-        long end = (ranges.length > 1 && !ranges[1].isEmpty()) ? Long.parseLong(ranges[1]) : videoLength - 1;
-        long contentLength = end - start + 1;
-
-        byte[] partialData = Arrays.copyOfRange(videoData, (int) start, (int) end + 1);
-
-        return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT)
-                .header(HttpHeaders.CONTENT_RANGE, "bytes " + start + "-" + end + "/" + videoLength)
-                .header(HttpHeaders.ACCEPT_RANGES, "bytes")
-                .contentLength(contentLength)
-                .contentType(MediaType.valueOf(mimeType))
-                .body(partialData);
+        HttpRange range = ranges.get(0);
+        long start = range.getRangeStart(contentLength);
+        long end   = range.getRangeEnd(contentLength);
+        long rangeLength = Math.min(CHUNK_SIZE, end - start + 1);
+        return new ResourceRegion(resource, start, rangeLength);
     }
 }
