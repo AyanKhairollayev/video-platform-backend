@@ -1,15 +1,3 @@
 spring:
-  datasource:
-    username: postgres
-    password: fiusLIoFgQEobsfYavlbwdnMXjWyViaU
-    url: jdbc:postgresql://postgres.railway.internal:5432/railway
-    driver-class-name: org.postgresql.Driver
-  jpa:
-    show-sql: true
-    generate-ddl: true
-    hibernate:
-      ddl-auto: create-drop
-  servlet:
-    multipart:
-      max-file-size: 500MB
-      max-request-size: 500MB
+  profiles:
+    active: test
