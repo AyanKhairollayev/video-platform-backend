@@ -18,3 +18,4 @@ spring:
     url: jdbc:postgresql://postgres.railway.internal:5432/railway
     user: postgres
     password: fiusLIoFgQEobsfYavlbwdnMXjWyViaU
+    locations: classpath:db/migration
