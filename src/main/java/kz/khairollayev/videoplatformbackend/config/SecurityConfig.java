@@ -1,5 +1,6 @@
 package kz.khairollayev.videoplatformbackend.config;
 
+import jakarta.servlet.http.HttpServletResponse;
 import kz.khairollayev.videoplatformbackend.security.JwtFilter;
 import kz.khairollayev.videoplatformbackend.service.impl.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,18 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((req, res, authEx) -> {
+                            res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            res.setContentType("application/json");
+                            res.getWriter().write("{\"error\":\"Unauthorized\"}");
+                        })
+                        .accessDeniedHandler((req, res, accessEx) -> {
+                            res.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                            res.setContentType("application/json");
+                            res.getWriter().write("{\"error\":\"Forbidden\"}");
+                        })
+                )
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
