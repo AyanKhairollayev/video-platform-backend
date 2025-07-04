@@ -45,7 +45,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("auth/**").permitAll()
+                        .requestMatchers("auth/**", "videos/list", "videos/preview/**", "videos/stream/**").permitAll()
                         .anyRequest().authenticated())
                 .authenticationProvider(daoAuthenticationProvider())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
