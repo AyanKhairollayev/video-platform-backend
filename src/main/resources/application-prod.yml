@@ -13,3 +13,8 @@ spring:
     multipart:
       max-file-size: 500MB
       max-request-size: 500MB
+  flyway:
+    enabled: true
+    url: jdbc:postgresql://postgres.railway.internal:5432/railway
+    user: postgres
+    password: fiusLIoFgQEobsfYavlbwdnMXjWyViaU

@@ -13,3 +13,8 @@ spring:
     multipart:
       max-file-size: 500MB
       max-request-size: 500MB
+  flyway:
+    enabled: true
+    url: jdbc:postgresql://localhost:5432/postgres
+    user: postgres
+    password: 123
