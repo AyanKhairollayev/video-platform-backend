@@ -1,9 +1,10 @@
-package kz.khairollayev.videoplatformbackend.service;
+package kz.khairollayev.videoplatformbackend.service.impl;
 
 import kz.khairollayev.videoplatformbackend.dto.VideoUploadDto;
 import kz.khairollayev.videoplatformbackend.dto.VideoPreviewDto;
 import kz.khairollayev.videoplatformbackend.model.Video;
 import kz.khairollayev.videoplatformbackend.repository.VideoRepository;
+import kz.khairollayev.videoplatformbackend.service.VideoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.support.ResourceRegion;
